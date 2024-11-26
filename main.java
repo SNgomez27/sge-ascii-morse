@@ -5,7 +5,11 @@ public class main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
+        // Diccionario de Morse a Castellano
         Hashtable<String, String> morseCastellano = new Hashtable<>();
+        // Diccionario de Castellano a Morse (invertido)
+        Hashtable<String, String> castellanoMorse = new Hashtable<>();
+
         morseCastellano.put("a", "._");
         morseCastellano.put("b", "_...");
         morseCastellano.put("c", "_._.");
@@ -44,16 +48,36 @@ public class main {
         morseCastellano.put("8", "___..");
         morseCastellano.put("9", "____.");
 
-        while (true) {
-            System.out.println("Introduce el texto (sin tildes) para traducir a código Morse (escribe 'terminar' para salir):");
-            String texto = scanner.nextLine().toLowerCase();
+        // Invertir el diccionario para tener de Morse a texto
+        for (String key : morseCastellano.keySet()) {
+            castellanoMorse.put(morseCastellano.get(key), key);
+        }
 
-            if (texto.equals("terminar")) {
+        while (true) {
+            System.out.println("¿Quieres traducir de texto a Morse o de Morse a texto?");
+            System.out.println("Escribe '1' para traducir de texto a Morse.");
+            System.out.println("Escribe '2' para traducir de Morse a texto.");
+            System.out.println("Escribe 'terminar' para salir.");
+            String opcion = scanner.nextLine().toLowerCase();
+
+            if (opcion.equals("terminar")) {
                 System.out.println("Programa terminado.");
                 break;
             }
-            String morseTraducido = traducirTextoAMorse(texto, morseCastellano);
-            System.out.println("Traducción a Morse: " + morseTraducido);
+
+            if (opcion.equals("1")) {
+                System.out.println("Introduce el texto (sin tildes) para traducir a código Morse:");
+                String texto = scanner.nextLine().toLowerCase();
+                String morseTraducido = traducirTextoAMorse(texto, morseCastellano);
+                System.out.println("Traducción a Morse: " + morseTraducido);
+            } else if (opcion.equals("2")) {
+                System.out.println("Introduce el código Morse (separado por espacios) para traducir a texto:");
+                String morse = scanner.nextLine();
+                String textoTraducido = traducirMorseATexto(morse, castellanoMorse);
+                System.out.println("Traducción a texto: " + textoTraducido);
+            } else {
+                System.out.println("Opción no válida.");
+            }
         }
         scanner.close();
     }
@@ -71,5 +95,20 @@ public class main {
             }
         }
         return morse.toString().trim();
+    }
+
+    private static String traducirMorseATexto(String morse, Hashtable<String, String> morseTable) {
+        StringBuilder texto = new StringBuilder();
+        String[] morseArray = morse.split(" ");
+        for (String simbolo : morseArray) {
+            if (simbolo.equals("/")) {
+                texto.append(" ");
+            } else if (morseTable.containsKey(simbolo)) {
+                texto.append(morseTable.get(simbolo));
+            } else {
+                texto.append("?");
+            }
+        }
+        return texto.toString();
     }
 }
